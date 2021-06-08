@@ -1,15 +1,15 @@
-const calenderMonthDOM = document.getElementById("cal-month");
-const calenderYearDOM = document.getElementById("cal-year");
-const deleteBtnInPopup = document.getElementById("delete-button");
-const noteContentInput = document.querySelector(".note-content");
-const noteTitleInput = document.querySelector(".note-title");
-const colorModal = document.getElementById("fav-color");
-const noteModal = document.getElementById("make-note");
+const currentDayDOM = document.querySelector("#dayCur");
+const currentMonthDOM = document.querySelector("#monthCur");
+const currentDateDOM = document.querySelector("#dateCur");
+const currentYearDOM = document.querySelector("#yearCur");
+const calenderMonthDOM = document.querySelector("#monthActual");
+const calenderYearDOM = document.querySelector("#yearActual");
 
-document.querySelector(".conMonth button:first-child").addEventListener("click", nextMonth);
-document.querySelector(".conMonth button:last-child").addEventListener("click", prevMonth);
+document.querySelector("#nextMonthClick").addEventListener("click", prevMonth);
+document.querySelector("#prevMonthClick").addEventListener("click", nextMonth);
 
 const now = new Date();
+
 //for testing purposes use 'let' instead of 'const'
 const todayDay = now.getDay(),
     todayDate = now.getDate(),
@@ -24,38 +24,74 @@ const state = {
 };
 
 const daysStr = {
-    0: "Sun",
-    1: "Mon",
-    2: "Tue",
-    3: "Wed",
-    4: "Thu",
-    5: "Fri",
-    6: "Sat"
+    0: "Пн",
+    1: "Вт",
+    2: "Ср",
+    3: "Чт",
+    4: "Пт",
+    5: "Сб",
+    6: "Вс"
 };
 
 const daysIndex = {
-    Sun: 0,
-    Mon: 1,
-    Tue: 2,
-    Wed: 3,
-    Thu: 4,
-    Fri: 5,
-    Sat: 6
+    Mon: 0,
+    Tue: 1,
+    Wed: 2,
+    Thu: 3,
+    Fri: 4,
+    Sat: 5,
+    Sun: 6
 };
 
 const monthsStr = {
-    0: "Jan",
-    1: "Feb",
-    2: "Mar",
-    3: "Apr",
-    4: "May",
-    5: "Jun",
-    6: "Jul",
-    7: "Aug",
-    8: "Sep",
-    9: "Oct",
-    10: "Nov",
-    11: "Dec"
+    0: {
+        var: 'Jan',
+        rus: 'Янв'
+    },
+    1: {
+        var: 'Feb',
+        rus: 'Фев'
+    },
+    2: {
+        var: 'Mar',
+        rus: 'Мар'
+    },
+    3: {
+        var: 'Apr',
+        rus: 'Апр'
+    },
+    4: {
+        var: 'May',
+        rus: 'Май'
+    },
+    5: {
+        var: 'Jun',
+        rus: 'Июн'
+    },
+    6: {
+        var: 'Jul',
+        rus: 'Июл'
+    },
+    7: {
+        var: 'Aug',
+        rus: 'Авг'
+    },
+    8: {
+        var: 'Sep',
+        rus: 'Сен'
+    },
+    9: {
+        var: 'Oct',
+        rus: 'Окт'
+    },
+    10: {
+        var: 'Nov',
+        rus: 'Ноя'
+    },
+    11: {
+        var: 'Dec',
+        rus: 'Дек'
+    }
 };
 
 const monthsIndex = {
@@ -73,154 +109,12 @@ const monthsIndex = {
     Dec: 11
 };
 
-const color_data = [
-    {
-        id: 0,
-        name: "blue",
-        value: "#1B19CD"
-    },
-    {
-        id: 1,
-        name: "red",
-        value: "#D01212"
-    },
-    {
-        id: 2,
-        name: "purple",
-        value: "#721D89"
-    },
-    {
-        id: 3,
-        name: "green",
-        value: "#158348"
-    },
-    {
-        id: 4,
-        name: "orange",
-        value: "#EE742D"
-    },
-    {
-        id: 5,
-        name: "deep-orange",
-        value: "#F13C26"
-    },
-    {
-        id: 6,
-        name: "baby-blue",
-        value: "#31B2FC"
-    },
-    {
-        id: 7,
-        name: "cerise",
-        value: "#EA3D69"
-    },
-    {
-        id: 8,
-        name: "lime",
-        value: "#2ACC32"
-    },
-    {
-        id: 9,
-        name: "teal",
-        value: "#2FCCB9"
-    },
-    {
-        id: 10,
-        name: "pink",
-        value: "#F50D7A"
-    },
-    {
-        id: 11,
-        name: "black",
-        value: "#212524"
-    }
-];
-
-var currentColor;
-
-let staticCurrentColor = {
-    id: 0,
-    name: color_data[0].name,
-    value: color_data[0].value
-};
-
-var notes;
-let staticNotes = [
-    {
-        id: 235684345,
-        title: "running marathon",
-        desc:
-            "blah lbah lorem ipsum sodem qwerty oiuy lorem ipsum sodem qwerty oiuy",
-        date: "2019 10 31"
-    },
-    {
-        id: 784534534,
-        title: "The Burger Chief opening event",
-        desc: "lorem ipsum sodem qwerty oiuy lorem ipsum sodem qwerty oiuy",
-        date: "2019 10 2"
-    },
-    {
-        id: 345463516,
-        title: "Jamal's Birthday",
-        desc: "lorem ipsum sodem qwerty oiuy lorem ipsum sodem qwerty oiuy",
-        date: "2019 11 22"
-    }
-];
-
-let notesFound = localStorage.getItem("notes");
-let colorsFound = localStorage.getItem("theme");
-
-if (!notesFound) {
-    console.log("notes not Found");
-    localStorage.setItem("notes", JSON.stringify(staticNotes));
-    notes = staticNotes;
-} else {
-    notes = JSON.parse(notesFound);
-}
-
-if (!colorsFound) {
-    console.log("colors not Found:");
-    localStorage.setItem("theme", JSON.stringify(staticCurrentColor));
-    currentColor = staticCurrentColor;
-} else {
-    currentColor = JSON.parse(colorsFound);
-    applyTheme();
-}
-
-//update local storage
-function updateLocalStorage() {
-    let currentNotes = notes;
-    localStorage.setItem("notes", JSON.stringify(currentNotes));
-    localStorage.setItem("theme", JSON.stringify(currentColor));
-    applyTheme();
-}
-
-function applyTheme() {
-    document.querySelector(
-        "table"
-    ).style.boxShadow = `0px 0px 149px -28px ${currentColor.value}`;
-
-    document.querySelector(
-        ".color"
-    ).style.backgroundColor = `${currentColor.value}`;
-
-    document.querySelector(
-        ".border-color"
-    ).style.backgroundColor = `${currentColor.value}`;
-
-    for (let i = 0; i < 7; i++) {
-        document.querySelectorAll(".weekday")[
-            i
-            ].style.backgroundColor = `${currentColor.value}`;
-    }
-}
-
 currentDayDOM.innerHTML = daysStr[todayDay];
 currentDateDOM.innerHTML = todayDate;
-currentMonthDOM.innerHTML = monthsStr[state.todayMonth];
+currentMonthDOM.innerHTML = monthsStr[state.todayMonth].rus;
 currentYearDOM.innerHTML = todayYear;
-var currentFullYear = analyizYear(state.todayYear);
-var currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth]];
+let currentFullYear = analyizYear(state.todayYear);
+let currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth].var];
 
 //run App
 showCalenderInfo();
@@ -301,7 +195,7 @@ function makePrevMonthArr(firstDayIndex) {
         prevMonthDays = analyizMonth("Dec", state.todayYear - 1).days_length;
     } else {
         prevMonthIdx = monthsIndex[currentFullMonth.month] - 1;
-        prevMonthDays = currentFullYear.months[monthsStr[prevMonthIdx]].days_length;
+        prevMonthDays = currentFullYear.months[monthsStr[prevMonthIdx].var].days_length;
     }
     let result = [];
     for (let i = 1; i <= firstDayIndex; i++) {
@@ -356,7 +250,7 @@ function printMonthCalendarInDOM() {
     for (let i = 0; i < 6; i++) {
         let currentWeek = monthArr[i];
         //
-        const week = document.querySelector("#table-body").children[i];
+        const week = document.querySelector("#calendarBody").children[i];
         for (let j = 0; j < 7; j++) {
             week.children[j].style.backgroundColor = "white";
             week.children[j].style.opacity = 1;
@@ -377,26 +271,11 @@ function printMonthCalendarInDOM() {
                     (state.todayMonth + 1) +
                     " " +
                     state.todayDate;
-                let isTodayHasNotes = notes.filter(note => note.date === todayFullDate);
-                let viewNote = "";
-                if (isTodayHasNotes.length > 0) {
-                    viewNote = `
-							
-							<br>
-							<div style="width:max-content;">
-							<i class="fas fa-sticky-note"></i>
-							</div>
-							<span class="tooltip"> ${isTodayHasNotes[0].title}</span>
-						
-							`;
-                    week.children[j].classList.add("tooltip-container");
-                }
+
                 // week.children[j].innerHTML = viewNote;
                 // week.children[j].id = notesFound.id;
-
-                week.children[
-                    j
-                    ].innerHTML = `${currentWeek[j].day}<img  id="todayLogo" src='https://png2.cleanpng.com/sh/8bf4e7fd67b71cbb64dd54c37b191c92/L0KzQYm3VMIzN6JofZH0aYP2gLBuTgRifKVxkZ99b3TkiX7wk711cJYyfNNELYTkhMX2j710d59sRdd3Z3zsg7m0hPF6NWQ9RadqZHPlQITrUPU2a2E4RqgDNkC3RoeBUcUzPGU2SqYCN0C4SIm1kP5o/kisspng-tattly-today-is-the-day-tattoo-song-english-day-38-5adcb03d0e5c03.6860466815244124770588.png'  /> ${viewNote}`;
+                let viewNote = "";
+                week.children[j].innerHTML = `${currentWeek[j].day}`;
                 // week.children[j].innerHTML = currentWeek[j].day;
                 week.children[j].id = "current-day";
                 week.children[j].classList.add("currMonth");
@@ -410,7 +289,6 @@ function printMonthCalendarInDOM() {
                 week.children[j].innerHTML = currentWeek[j].day;
                 week.children[j].removeAttribute("id");
                 if (currentWeek[j].state !== "currMonth") {
-                    week.children[j].style.backgroundColor = currentColor.value;
                     week.children[j].style.opacity = 0.6;
                     week.children[j].style.color = "rgba(255, 255, 255,0.4)";
                     week.children[j].style.cursor = "default";
@@ -426,26 +304,6 @@ function printMonthCalendarInDOM() {
                         (currentFullMonth.month_idx + 1) +
                         " " +
                         currentWeek[j].day;
-                    let notesFound = notes.filter(
-                        note => note.date === currentFullDate
-                    )[0];
-                    if (notesFound) {
-                        let viewNote = `
-						<td>
-						<span class="day">${currentWeek[j].day}</span>
-						<br>
-						<div style="width:max-content;">
-						<i class="fas fa-sticky-note"></i>
-						</div>
-						<span class="tooltip"> ${notesFound.title}</span>
-					</td>
-						`;
-                        week.children[j].innerHTML = viewNote;
-                        week.children[j].classList.add("tooltip-container");
-                        week.children[j].id = notesFound.id;
-                    } else {
-                        week.children[j].classList.remove("tooltip-container");
-                    }
                 }
             }
             // console.log("xZx: ", currentWeek[j]);
@@ -460,7 +318,7 @@ function nextMonth() {
         currentFullYear = analyizYear(state.todayYear);
         state.todayMonth = 0;
     }
-    currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth]];
+    currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth].var];
     showCalenderInfo();
 }
 
@@ -471,12 +329,12 @@ function prevMonth() {
         currentFullYear = analyizYear(state.todayYear);
         state.todayMonth = 11;
     }
-    currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth]];
+    currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth].var];
     showCalenderInfo();
 }
 
 function showCalenderInfo() {
-    calenderMonthDOM.innerHTML = monthsStr[state.todayMonth];
+    calenderMonthDOM.innerHTML = monthsStr[state.todayMonth].rus;
     calenderYearDOM.innerHTML = state.todayYear;
     printMonthCalendarInDOM();
 }
@@ -490,164 +348,8 @@ calenderYearDOM.addEventListener("input", e => {
         typeof year === "number"
     ) {
         currentFullYear = analyizYear(year);
-        currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth]];
+        currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth].var];
         state.todayYear = year;
         showCalenderInfo();
     }
 });
-
-document
-    .getElementById("theme-landscape")
-    .addEventListener("click", changeColorTheme);
-document
-    .getElementById("theme-portrait")
-    .addEventListener("click", changeColorTheme);
-
-let newColorPrefrence;
-modal.addEventListener("click", e => {
-    let ele = e.target.classList;
-
-    if (ele[0] === "modal" || ele[0] === "fade-in") {
-        closeModal();
-    } else if (ele[0] === "color-preview") {
-        const siblings = e.target.parentElement.parentElement;
-        for (let i = 0; i < siblings.children.length; i++) {
-            const element = siblings.children[i].firstElementChild;
-            element.classList.remove("selectedColor");
-        }
-        if (e.target.parentElement.classList[0] === "color-option") {
-            newColorPrefrence = e.target.id;
-        }
-        ele.add("selectedColor");
-    }
-});
-
-let isModalOpen = false;
-
-function openModal(isNote = false) {
-    isModalOpen = true;
-    popup.classList.remove("fade-out");
-    modal.style.display = "block";
-
-    isNote
-        ? (noteModal.style.display = "flex")
-        : (colorModal.style.display = "flex");
-    popup.classList.add("fade-in");
-}
-
-closeModal();
-
-function closeModal() {
-    isModalOpen = false;
-    popup.classList.remove("fade-in");
-    popup.classList.add("fade-out");
-    modal.style.display = "none";
-    noteModal.style.display = "none";
-    colorModal.style.display = "none";
-    deleteBtnInPopup.style.display = "inline";
-    noteTitleInput.value = "";
-    noteContentInput.value = "";
-    document.getElementById("warning").innerHTML = "";
-}
-
-function changeColorTheme() {
-    openModal();
-    seletectChosenColor();
-}
-
-seletectChosenColor();
-
-function seletectChosenColor() {
-    const colorsOptions = document.getElementById("color-options").children;
-    for (let i = 0; i < colorsOptions.length; i++) {
-        const currentChild = colorsOptions[i].firstElementChild;
-
-        if (currentColor.name == currentChild.id) {
-            currentChild.innerHTML = "<i class='fas fa-check checkmark'></i>";
-        } else {
-            currentChild.innerHTML = "";
-        }
-    }
-}
-
-document.getElementById("update-theme-button").addEventListener("click", () => {
-    const chosenColor = color_data.filter(
-        color => color.name === newColorPrefrence
-    );
-    currentColor = chosenColor[0];
-    document.getElementById("theme-portrait").style.backgroundColor =
-        currentColor.value;
-    updateLocalStorage();
-    printMonthCalendarInDOM();
-    applyTheme();
-    closeModal();
-});
-
-//mini clock 12 and 24 timing
-let is24hours = true;
-let intervalState;
-
-function makeClockTikTok() {
-    intervalState = setInterval(() => {
-        let hours = new Date().getHours();
-        const minutes = new Date().getMinutes();
-        const seconds = new Date().getSeconds();
-        // console.log("seconds:", seconds);
-        let in12hours = 12;
-        let dayState = "AM";
-
-        if (hours > 0 && hours < 12) {
-            in12hours = hours;
-        } else if (hours !== 0) {
-            if (hours === 12) {
-                hours += 12;
-            }
-            in12hours = hours - 12;
-            dayState = "PM";
-        }
-
-        if (is24hours) {
-            hours = in12hours;
-        }
-        const timeTemplate = `
-		<span>${hours > 9 ? hours : "0" + hours} </span>:
-		<span>${minutes > 9 ? minutes : "0" + minutes} </span>:
-		<span>${seconds > 9 ? seconds : "0" + seconds}</span>
-		<span>${is24hours ? dayState : ""}</span>
-		`;
-        document.querySelector(".time").innerHTML = timeTemplate;
-    }, 1000);
-}
-
-document
-    .querySelector(".time")
-    .addEventListener(
-        "click",
-        () => ((is24hours = !is24hours), makeClockTikTok())
-    );
-
-//to stop the calculating time if it is on orientation mode
-var mql = window.matchMedia("(orientation: portrait)");
-//if the user launched this app while on portrait mode
-if (!mql.matches) {
-    makeClockTikTok();
-}
-
-// Add a media query change listener
-mql.addListener(function (m) {
-    if (m.matches) {
-        // Changed to portrait
-        console.log("portrait mode");
-        clearInterval(intervalState);
-    } else {
-        // Changed to landscape
-        console.log("landscape mode");
-        makeClockTikTok();
-    }
-});
-
-//things i regret about this project:
-//1- i didnt use a design pattern !
-//2- i used date object as a string instead of date formate in notes
-//3- as the feauters progress i end up with a spagheti code ! sorry :(
-// FACT: it wouldn't be possible without the builtin date object "new Date()" thanks javascript !
