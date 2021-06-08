@@ -43,13 +43,30 @@ table {
     color: white;
     /*box-shadow: 0 0 25px 15px #3b3a30;*/
     border: 2px solid white;
-    border-radius: 20px;
+    border-radius: 20px 20px 0 0;
     overflow: hidden;
+}
+
+/*---About day---*/
+#current-day-info,
+#current-day-info div {
+    display: flex;
+}
+
+#current-day-info {
+    border: 2px solid white;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    width: 40%;
+    order: 1;
+    flex-direction: column;
+    background-color: #3b3a30;
+    color: white;
 }
 
 /*---Calendar Header---*/
 #calendar {
-    margin: 0 auto;
+    order: 0;
     width: 40%;
     display: flex;
     flex-direction: column;
@@ -131,7 +148,7 @@ table {
 }
 
 table tr:last-child td:first-child {
-    border-radius: 0 0 0 20px;
+    border-radius: 0 0 0 0;
 }
 
 table tr:last-child td:last-child {
