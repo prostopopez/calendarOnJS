@@ -1,0 +1,134 @@
+/*---Basic Styles---*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Proba Pro', sans-serif;
+    font-weight: normal;
+}
+
+body {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4e1d2;
+}
+
+a,
+button,
+input,
+textarea {
+    transition: all .3s linear;
+    outline: none;
+}
+
+button {
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background: none;
+}
+
+button::-moz-focus-inner {
+    border: 0;
+}
+
+table {
+    /*margin: 14px auto;*/
+    padding: 0.5vh 0.5vh;
+    background-color: #3b3a30;
+    color: white;
+    /*box-shadow: 0 0 25px 15px #3b3a30;*/
+    border: 2px solid white;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/*---Calendar Header---*/
+#calendar {
+    margin: 0 auto;
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+#calendar,
+.conMonth {
+    display: flex;
+    justify-content: center;
+}
+
+#yearActual,
+.conMonth h3,
+.weekHead {
+    font-size: 28px;
+}
+
+.conMonth {
+    height: 40px;
+    align-items: center;
+}
+
+.conMonth button, .conMonth h3 {
+    display: inline-block;
+}
+
+.conMonth h3 {
+    margin: 0 15px;
+    font-weight: bold;
+}
+
+.conMonth svg {
+    width: 24px;
+    height: 24px;
+}
+
+@media only screen and (max-width: 1400px) {
+    #yearActual,
+    .conMonth h3,
+    .weekHead {
+        font-size: 22px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    #calendar {
+        width: 80%;
+    }
+
+    #yearActual,
+    .conMonth h3,
+    .weekHead {
+        font-size: 20px;
+    }
+}
+
+/*---Calendar Body---*/
+.mainCont {
+    background-color: white;
+    color: #222;
+}
+
+.mainCont td {
+    padding: 0.5vw;
+    min-width: 30px;
+    width: 100px;
+    height: 30px;
+    text-align: right;
+    font-size: 20px;
+    font-weight: 600;
+    vertical-align: top;
+    transition: font-size 0.4s ease;
+}
+
+table tr:last-child td:first-child {
+    border-radius: 0 0 0 20px;
+}
+
+table tr:last-child td:last-child {
+    border-radius: 0 0 20px 0;
+}
