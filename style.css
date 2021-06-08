@@ -146,11 +146,3 @@ table {
     vertical-align: top;
     transition: font-size 0.4s ease;
 }
-
-table tr:last-child td:first-child {
-    border-radius: 0 0 0 0;
-}
-
-table tr:last-child td:last-child {
-    border-radius: 0 0 20px 0;
-}
