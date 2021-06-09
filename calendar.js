@@ -1,20 +1,20 @@
-const currentDayDOM = document.querySelector("#dayCur");
-const currentMonthDOM = document.querySelector("#monthCur");
-const currentDateDOM = document.querySelector("#dateCur");
-const currentYearDOM = document.querySelector("#yearCur");
-const calenderMonthDOM = document.querySelector("#monthActual");
-const calenderYearDOM = document.querySelector("#yearActual");
+// Переменные - день, месяц, год
+const currentDay = document.querySelector("#dayCur");
+const currentMonth = document.querySelector("#monthCur");
+const currentDate = document.querySelector("#dateCur");
+const currentYear = document.querySelector("#yearCur");
+const calendarMonth = document.querySelector("#monthActual");
+const calendarYear = document.querySelector("#yearActual");
 
+// Кнопки - следующий, предыдущий месяц
 document.querySelector("#nextMonthClick").addEventListener("click", prevMonth);
 document.querySelector("#prevMonthClick").addEventListener("click", nextMonth);
 
-const now = new Date();
-
-//for testing purposes use 'let' instead of 'const'
-const todayDay = now.getDay(),
-    todayDate = now.getDate(),
-    todayMonth = now.getMonth(),
-    todayYear = now.getFullYear();
+// Выносим из даты составляющие
+const todayDay = new Date().getDay();
+const todayDate = new Date().getDate();
+const todayMonth = new Date().getMonth();
+const todayYear = new Date().getFullYear();
 
 const state = {
     todayDay,
@@ -23,14 +23,15 @@ const state = {
     todayYear
 };
 
-const daysStr = {
-    0: "Пн",
-    1: "Вт",
-    2: "Ср",
-    3: "Чт",
-    4: "Пт",
-    5: "Сб",
-    6: "Вс"
+// Объект, содержащий названия дней недели
+const daysList = {
+    0: "Понедельник",
+    1: "Вторник",
+    2: "Среда",
+    3: "Четверг",
+    4: "Пятница",
+    5: "Суббота",
+    6: "Воскресенье"
 };
 
 const daysIndex = {
@@ -43,22 +44,23 @@ const daysIndex = {
     Sun: 6
 };
 
-const monthsStr = {
+// Объект, содержащий переменные месяцев и перевод на русский язык
+const monthsList = {
     0: {
         var: 'Jan',
-        rus: 'Янв'
+        rus: 'Январь'
     },
     1: {
         var: 'Feb',
-        rus: 'Фев'
+        rus: 'Февраль'
     },
     2: {
         var: 'Mar',
-        rus: 'Мар'
+        rus: 'Март'
     },
     3: {
         var: 'Apr',
-        rus: 'Апр'
+        rus: 'Апрель'
     },
     4: {
         var: 'May',
@@ -66,31 +68,31 @@ const monthsStr = {
     },
     5: {
         var: 'Jun',
-        rus: 'Июн'
+        rus: 'Июнь'
     },
     6: {
         var: 'Jul',
-        rus: 'Июл'
+        rus: 'Июль'
     },
     7: {
         var: 'Aug',
-        rus: 'Авг'
+        rus: 'Август'
     },
     8: {
         var: 'Sep',
-        rus: 'Сен'
+        rus: 'Сентябрь'
     },
     9: {
         var: 'Oct',
-        rus: 'Окт'
+        rus: 'Октябрь'
     },
     10: {
         var: 'Nov',
-        rus: 'Ноя'
+        rus: 'Ноябрь'
     },
     11: {
         var: 'Dec',
-        rus: 'Дек'
+        rus: 'Декабрь'
     }
 };
 
@@ -109,15 +111,15 @@ const monthsIndex = {
     Dec: 11
 };
 
-currentDayDOM.innerHTML = daysStr[todayDay];
-currentDateDOM.innerHTML = todayDate;
-currentMonthDOM.innerHTML = monthsStr[state.todayMonth].rus;
-currentYearDOM.innerHTML = todayYear;
+currentDay.innerHTML = daysList[todayDay];
+currentDate.innerHTML = todayDate;
+currentMonth.innerHTML = monthsList[state.todayMonth].rus;
+currentYear.innerHTML = todayYear;
 let currentFullYear = analyizYear(state.todayYear);
-let currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth].var];
+let currentFullMonth = currentFullYear.months[monthsList[state.todayMonth].var];
 
 //run App
-showCalenderInfo();
+showCalendarInfo();
 
 //exp: analyizYear(2021) will get you all months length,first day,last day with indexes
 function analyizYear(year) {
@@ -195,7 +197,7 @@ function makePrevMonthArr(firstDayIndex) {
         prevMonthDays = analyizMonth("Dec", state.todayYear - 1).days_length;
     } else {
         prevMonthIdx = monthsIndex[currentFullMonth.month] - 1;
-        prevMonthDays = currentFullYear.months[monthsStr[prevMonthIdx].var].days_length;
+        prevMonthDays = currentFullYear.months[monthsList[prevMonthIdx].var].days_length;
     }
     let result = [];
     for (let i = 1; i <= firstDayIndex; i++) {
@@ -204,15 +206,9 @@ function makePrevMonthArr(firstDayIndex) {
     }
 
     return result;
-    //**** previous version of this code was returning just days without state
-    //**** like [1,2,3] instead of day and its state like [{day:1,"prevMonth"}]
-    // return Array.from(
-    // 	{ length: firstDayIndex },
-    // 	(_, i) => prevMonthDays - firstDayIndex + i
-    // );
 }
 
-// this will print an array of with days of prev month and next month crosponds to the calender table
+// this will print an array of with days of prev month and next month crosponds to the calendar table
 function calcMonthCalendar() {
     // Create array: [1, 2, 3, ..., 30, 31]
     const currMonth = Array.from(
@@ -265,48 +261,26 @@ function printMonthCalendarInDOM() {
                 currentFullMonth.month_idx === todayMonth &&
                 currentFullYear.year === todayYear
             ) {
-                let todayFullDate =
-                    state.todayYear +
-                    " " +
-                    (state.todayMonth + 1) +
-                    " " +
-                    state.todayDate;
-
-                // week.children[j].innerHTML = viewNote;
-                // week.children[j].id = notesFound.id;
-                let viewNote = "";
                 week.children[j].innerHTML = `${currentWeek[j].day}`;
-                // week.children[j].innerHTML = currentWeek[j].day;
                 week.children[j].id = "current-day";
                 week.children[j].classList.add("currMonth");
-                week.children[j].style.backgroundColor = "#e1e1e1";
+                week.children[j].style.backgroundColor = "wheat";
                 currentMonthStarted = false;
                 currentMonthEnd = false;
             } else {
-                week.children[j].style.cursor = "";
-                week.children[j].style.backgroundColor = "white"; //.style.backgroundColor = "white";
-                week.children[j].style.color = "black";
+                week.children[j].style.backgroundColor = "white";
+                // week.children[j].style.color = "black";
                 week.children[j].innerHTML = currentWeek[j].day;
                 week.children[j].removeAttribute("id");
                 if (currentWeek[j].state !== "currMonth") {
-                    week.children[j].style.opacity = 0.6;
-                    week.children[j].style.color = "rgba(255, 255, 255,0.4)";
-                    week.children[j].style.cursor = "default";
+                    week.children[j].style.backgroundColor = '#f4e1d2';
+                    week.children[j].style.color = "#3b3a30";
                     week.children[j].classList.remove("currMonth");
-                    week.children[j].classList.remove("tooltip-container");
                 }
                 if (currentWeek[j].state == "currMonth") {
-                    //exp 2019 10 24
                     week.children[j].classList.add("currMonth");
-                    let currentFullDate =
-                        currentFullMonth.year +
-                        " " +
-                        (currentFullMonth.month_idx + 1) +
-                        " " +
-                        currentWeek[j].day;
                 }
             }
-            // console.log("xZx: ", currentWeek[j]);
         }
     }
 }
@@ -318,8 +292,8 @@ function nextMonth() {
         currentFullYear = analyizYear(state.todayYear);
         state.todayMonth = 0;
     }
-    currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth].var];
-    showCalenderInfo();
+    currentFullMonth = currentFullYear.months[monthsList[state.todayMonth].var];
+    showCalendarInfo();
 }
 
 function prevMonth() {
@@ -329,18 +303,18 @@ function prevMonth() {
         currentFullYear = analyizYear(state.todayYear);
         state.todayMonth = 11;
     }
-    currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth].var];
-    showCalenderInfo();
+    currentFullMonth = currentFullYear.months[monthsList[state.todayMonth].var];
+    showCalendarInfo();
 }
 
-function showCalenderInfo() {
-    calenderMonthDOM.innerHTML = monthsStr[state.todayMonth].rus;
-    calenderYearDOM.innerHTML = state.todayYear;
+function showCalendarInfo() {
+    calendarMonth.innerHTML = monthsList[state.todayMonth].rus;
+    calendarYear.innerHTML = state.todayYear;
     printMonthCalendarInDOM();
 }
 
 // to change the year manually
-calenderYearDOM.addEventListener("input", e => {
+calendarYear.addEventListener("input", e => {
     let numberPattern = /\d+/g;
     let year = parseInt(e.target.innerHTML.match(numberPattern).join(""));
     if (
@@ -348,8 +322,10 @@ calenderYearDOM.addEventListener("input", e => {
         typeof year === "number"
     ) {
         currentFullYear = analyizYear(year);
-        currentFullMonth = currentFullYear.months[monthsStr[state.todayMonth].var];
+        currentFullMonth = currentFullYear.months[monthsList[state.todayMonth].var];
         state.todayYear = year;
-        showCalenderInfo();
+        showCalendarInfo();
     }
 });
+
+console.log(state);
