@@ -73,6 +73,10 @@ table {
     margin-right: 0;
 }
 
+#aboutToday p {
+    text-align: center;
+}
+
 /*---Шапка календаря---*/
 #calendar {
     order: 0;
@@ -161,6 +165,7 @@ table {
 }
 
 .mainCont td {
+    z-index: 1;
     padding: 0.5vw;
     min-width: 30px;
     width: 100px;
@@ -177,4 +182,46 @@ table {
     cursor: pointer;
     color: white !important;
     background-color: #3b3a30 !important;
+}
+
+/* Стили для выпадающей подсказки */
+[data-tooltip] {
+    position: relative; /* Относительное позиционирование */
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip); /* Выводим текст */
+    position: absolute; /* Абсолютное позиционирование */
+    width: 300px; /* Ширина подсказки */
+    left: 0;
+    top: 0; /* Положение подсказки */
+    background: #3989c9; /* Синий цвет фона */
+    color: #fff; /* Цвет текста */
+    padding: 0.5em; /* Поля вокруг текста */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Параметры тени */
+    pointer-events: none; /* Подсказка */
+    opacity: 0; /* Подсказка невидима */
+    transition: 1s; /* Время появления подсказки */
+}
+
+[data-tooltip]:hover {
+    z-index: 1000;
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1; /* Показываем подсказку */
+    top: 2em; /* Положение подсказки */
+}
+
+@media only screen and (max-width: 1400px) {
+    [data-tooltip]::after {
+        width: 200px;
+        font-size: 18px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    [data-tooltip]::after {
+        font-size: 16px;
+    }
 }

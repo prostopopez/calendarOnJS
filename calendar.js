@@ -1,10 +1,11 @@
-// Переменные - день, месяц, год
+// Переменные - день, месяц, год, выходные
 const currentDay = document.querySelector("#dayCur");
 const currentMonth = document.querySelector("#monthCur");
 const currentDate = document.querySelector("#dateCur");
 const currentYear = document.querySelector("#yearCur");
 const calendarMonth = document.querySelector("#monthActual");
 const calendarYear = document.querySelector("#yearActual");
+const holidays = document.querySelector(".holidays p");
 
 // Кнопки - следующий, предыдущий месяц
 document.querySelector("#nextMonthClick").addEventListener("click", prevMonth);
@@ -116,11 +117,46 @@ const monthsIndexes = {
     Dec: 11
 };
 
+let holidaysList = [
+    {
+        name: 'Международный день защиты детей',
+        month: 'Jun',
+        dayIndex: 9
+    },
+    {
+        name: 'Ещё один праздник',
+        month: 'Jun',
+        dayIndex: 9
+    },
+    {
+        name: 'Третий праздник',
+        month: 'Jun',
+        dayIndex: 1
+    },
+    {
+        name: 'Четвёртый праздник',
+        month: 'Jun',
+        dayIndex: 9
+    },
+    {
+        name: 'Какой-то праздник',
+        month: 'Jun',
+        dayIndex: 15
+    }
+];
+
 // Замена данных о сегодняшнем дне
 currentYear.innerHTML = todayYear;
 currentDay.innerHTML = daysList[todayDay] + ',';
 currentMonth.innerHTML = monthsList[state.todayMonth].rus + ',';
 currentDate.innerHTML = todayDate + ' число';
+
+// Проверка на соответствие месяца и дня дате праздника
+for (let y = 0; y < holidaysList.length; y++) {
+    if (holidaysList[y].month == monthsList[todayMonth].var && holidaysList[y].dayIndex == todayDate) {
+        holidays.innerHTML += holidaysList[y].name + `<br/>`;
+    }
+}
 
 // Замена данных о сегодняшнем дне
 let fullYear = checkYearDays(state.todayYear);
@@ -240,8 +276,21 @@ function calcMonthCalendar() {
     // state - нынешний и следующий месяцы
     const currMonth = Array.from(
         { length: fullMonth.daysLength },
-        (_, i) => ({ day: i + 1, state: "currMonth" })
+        (_, i) => ({ day: i + 1, state: "currMonth", holidays: findHolidays(i + 1) })
     );
+
+    // Заполнение массива названиями праздников
+    function findHolidays(day) {
+        let holidays = [];
+
+        for (let y = 0; y < holidaysList.length; y++) {
+            if (holidaysList[y].month == fullMonth.month && holidaysList[y].dayIndex == day) {
+                holidays.push(holidaysList[y].name);
+            }
+        }
+
+        return holidays;
+    }
 
     const nextMonth = Array.from(
         { length: fullMonth.daysLength },
@@ -315,6 +364,13 @@ function printCalendar() {
                 if (currentWeek[j].state !== "currMonth") {
                     weekDays[j].style.backgroundColor = '#f4e1d2';
                 }
+            }
+
+            // Заполнение праздничных дней подсказками и изменение их цвета
+            if (currentWeek[j].hasOwnProperty('holidays') && currentWeek[j].holidays.length > 0) {
+                // Перекрашивание ячейки с праздником
+                weekDays[j].style.backgroundColor = "lightgreen";
+                weekDays[j].setAttribute('data-tooltip', currentWeek[j].holidays.map(item => item));
             }
         }
     }
