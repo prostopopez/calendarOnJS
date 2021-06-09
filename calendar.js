@@ -16,7 +16,8 @@ const todayDate = new Date().getDate();
 const todayMonth = new Date().getMonth();
 const todayYear = new Date().getFullYear();
 
-const state = {
+// Объект, содержащий актуальные состояния
+let state = {
     todayDay,
     todayDate,
     todayMonth,
@@ -34,6 +35,7 @@ const daysList = {
     6: "Воскресенье"
 };
 
+// Объект, содержащий индексы дней недели
 const daysIndex = {
     Mon: 0,
     Tue: 1,
@@ -96,6 +98,7 @@ const monthsList = {
     }
 };
 
+// Объект, содержащий индексы месяцев
 const monthsIndex = {
     Jan: 0,
     Feb: 1,
@@ -111,16 +114,25 @@ const monthsIndex = {
     Dec: 11
 };
 
-currentDay.innerHTML = daysList[todayDay];
-currentDate.innerHTML = todayDate;
-currentMonth.innerHTML = monthsList[state.todayMonth].rus;
+// Замена данных о сегодняшнем дне
 currentYear.innerHTML = todayYear;
-let currentFullYear = analyizYear(state.todayYear);
-let currentFullMonth = currentFullYear.months[monthsList[state.todayMonth].var];
+currentDay.innerHTML = daysList[todayDay];
+currentMonth.innerHTML = monthsList[state.todayMonth].rus;
+currentDate.innerHTML = todayDate;
 
-//run App
-showCalendarInfo();
+// Замена данных о сегодняшнем дне
+let fullYear = analyizYear(state.todayYear);
+let fullMonth = fullYear.months[monthsList[state.todayMonth].var];
 
+// Вызов основной функции
+changeCalendar();
+
+// Заменяет в календаре месяц и день на актуальные
+function changeCalendar() {
+    calendarMonth.innerHTML = monthsList[state.todayMonth].rus;
+    calendarYear.innerHTML = state.todayYear;
+    printCalendar();
+}
 //exp: analyizYear(2021) will get you all months length,first day,last day with indexes
 function analyizYear(year) {
     let counter = 0;
@@ -196,8 +208,8 @@ function makePrevMonthArr(firstDayIndex) {
     if (state.todayMonth === 0) {
         prevMonthDays = analyizMonth("Dec", state.todayYear - 1).days_length;
     } else {
-        prevMonthIdx = monthsIndex[currentFullMonth.month] - 1;
-        prevMonthDays = currentFullYear.months[monthsList[prevMonthIdx].var].days_length;
+        prevMonthIdx = monthsIndex[fullMonth.month] - 1;
+        prevMonthDays = fullYear.months[monthsList[prevMonthIdx].var].days_length;
     }
     let result = [];
     for (let i = 1; i <= firstDayIndex; i++) {
@@ -212,19 +224,19 @@ function makePrevMonthArr(firstDayIndex) {
 function calcMonthCalendar() {
     // Create array: [1, 2, 3, ..., 30, 31]
     const currMonth = Array.from(
-        { length: currentFullMonth.days_length },
+        { length: fullMonth.days_length },
         (_, i) => ({ day: i + 1, state: "currMonth" })
     );
 
     const nextMonth = Array.from(
-        { length: currentFullMonth.days_length },
+        { length: fullMonth.days_length },
         (_, i) => ({ day: i + 1, state: "nextMonth" })
     );
 
     // Create a flat array with leading zeros and trailing last week:
     // [0, 0, 0, 0, 1, 2, 3, ..., 30, 31, 1, 2, 3, 4, 5, 6, 7]
     const flatResultArr = [
-        ...makePrevMonthArr(currentFullMonth.first_day_index),
+        ...makePrevMonthArr(fullMonth.first_day_index),
         ...currMonth,
         ...nextMonth // this includes extra numbers that will be trimmed
     ].slice(0, 7 * 6); // 7 days/week * 6 weeks
@@ -238,7 +250,7 @@ function calcMonthCalendar() {
 }
 
 // print each cell its day number and color
-function printMonthCalendarInDOM() {
+function printCalendar() {
     const monthArr = calcMonthCalendar();
 
     let currentMonthStarted = false;
@@ -258,8 +270,8 @@ function printMonthCalendarInDOM() {
                 currentMonthEnd &&
                 currentMonthStarted &&
                 currentWeek[j].day === todayDate &&
-                currentFullMonth.month_idx === todayMonth &&
-                currentFullYear.year === todayYear
+                fullMonth.month_idx === todayMonth &&
+                fullYear.year === todayYear
             ) {
                 week.children[j].innerHTML = `${currentWeek[j].day}`;
                 week.children[j].id = "current-day";
@@ -289,28 +301,22 @@ function nextMonth() {
     state.todayMonth += 1;
     if (state.todayMonth == 12) {
         state.todayYear += 1;
-        currentFullYear = analyizYear(state.todayYear);
+        fullYear = analyizYear(state.todayYear);
         state.todayMonth = 0;
     }
-    currentFullMonth = currentFullYear.months[monthsList[state.todayMonth].var];
-    showCalendarInfo();
+    fullMonth = fullYear.months[monthsList[state.todayMonth].var];
+    changeCalendar();
 }
 
 function prevMonth() {
     state.todayMonth -= 1;
     if (state.todayMonth == 0) {
         state.todayYear -= 1;
-        currentFullYear = analyizYear(state.todayYear);
+        fullYear = analyizYear(state.todayYear);
         state.todayMonth = 11;
     }
-    currentFullMonth = currentFullYear.months[monthsList[state.todayMonth].var];
-    showCalendarInfo();
-}
-
-function showCalendarInfo() {
-    calendarMonth.innerHTML = monthsList[state.todayMonth].rus;
-    calendarYear.innerHTML = state.todayYear;
-    printMonthCalendarInDOM();
+    fullMonth = fullYear.months[monthsList[state.todayMonth].var];
+    changeCalendar();
 }
 
 // to change the year manually
@@ -321,11 +327,9 @@ calendarYear.addEventListener("input", e => {
         e.target.innerHTML.match(numberPattern).join("").length > 3 &&
         typeof year === "number"
     ) {
-        currentFullYear = analyizYear(year);
-        currentFullMonth = currentFullYear.months[monthsList[state.todayMonth].var];
+        fullYear = analyizYear(year);
+        fullMonth = fullYear.months[monthsList[state.todayMonth].var];
         state.todayYear = year;
-        showCalendarInfo();
+        changeCalendar();
     }
 });
-
-console.log(state);
