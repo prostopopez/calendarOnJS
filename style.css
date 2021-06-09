@@ -1,4 +1,4 @@
-/*---Basic Styles---*/
+/*---Базовые стили---*/
 * {
     margin: 0;
     padding: 0;
@@ -45,7 +45,7 @@ table {
     overflow: hidden;
 }
 
-/*---About day---*/
+/*---Сегодня---*/
 #aboutToday,
 #aboutToday div {
     display: flex;
@@ -55,20 +55,38 @@ table {
     border: 2px solid white;
     border-top: none;
     border-radius: 0 0 20px 20px;
+    padding: 5px 10px;
     width: 40%;
-    order: 1;
     flex-direction: column;
+    align-items: center;
+    order: 1;
+    font-size: 24px;
     background-color: #3b3a30;
     color: white;
 }
 
-/*---Calendar Header---*/
+#aboutToday div h2 {
+    margin-right: 10px;
+}
+
+#aboutToday div h2:last-child {
+    margin-right: 0;
+}
+
+/*---Шапка календаря---*/
 #calendar {
     order: 0;
     width: 40%;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+}
+
+#calendar input {
+    border: none;
+    background-color: #3b3a30;
+    text-align: center;
+    color: white;
 }
 
 #calendar,
@@ -104,6 +122,10 @@ table {
 }
 
 @media only screen and (max-width: 1400px) {
+    #aboutToday {
+        font-size: 18px;
+    }
+
     #yearActual,
     .conMonth h3,
     .weekHead {
@@ -120,6 +142,11 @@ table {
         width: 80%;
     }
 
+    #aboutToday {
+        width: 80%;
+        font-size: 14px;
+    }
+
     #yearActual,
     .conMonth h3,
     .weekHead {
@@ -127,7 +154,7 @@ table {
     }
 }
 
-/*---Calendar Body---*/
+/*---Тело календаря---*/
 .mainCont {
     background-color: white;
     color: #222;

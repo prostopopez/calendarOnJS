@@ -10,13 +10,15 @@ const calendarYear = document.querySelector("#yearActual");
 document.querySelector("#nextMonthClick").addEventListener("click", prevMonth);
 document.querySelector("#prevMonthClick").addEventListener("click", nextMonth);
 
-// Выносим из даты составляющие
-const todayDay = new Date().getDay();
+// Выносим из даты составляющие. Так как день недели у нас начинается с Понедельника,
+// а в JS с Воскресенья, вычтем 1 день и добавим проверку на отрицательное значение
+// (при помощи тернарного оператора)
+const todayDay = (new Date().getDay() - 1) > 0 ? (new Date().getDay() - 1) : 6;
 const todayDate = new Date().getDate();
 const todayMonth = new Date().getMonth();
 const todayYear = new Date().getFullYear();
 
-// Объект, содержащий актуальные состояния
+// Объект, содержащий актуальные состояния даты
 let state = {
     todayDay,
     todayDate,
@@ -36,7 +38,7 @@ const daysList = {
 };
 
 // Объект, содержащий индексы дней недели
-const daysIndex = {
+const daysIndexes = {
     Mon: 0,
     Tue: 1,
     Wed: 2,
@@ -99,7 +101,7 @@ const monthsList = {
 };
 
 // Объект, содержащий индексы месяцев
-const monthsIndex = {
+const monthsIndexes = {
     Jan: 0,
     Feb: 1,
     Mar: 2,
@@ -116,12 +118,12 @@ const monthsIndex = {
 
 // Замена данных о сегодняшнем дне
 currentYear.innerHTML = todayYear;
-currentDay.innerHTML = daysList[todayDay];
-currentMonth.innerHTML = monthsList[state.todayMonth].rus;
-currentDate.innerHTML = todayDate;
+currentDay.innerHTML = daysList[todayDay] + ',';
+currentMonth.innerHTML = monthsList[state.todayMonth].rus + ',';
+currentDate.innerHTML = todayDate + ' число';
 
 // Замена данных о сегодняшнем дне
-let fullYear = analyizYear(state.todayYear);
+let fullYear = checkYearDays(state.todayYear);
 let fullMonth = fullYear.months[monthsList[state.todayMonth].var];
 
 // Вызов основной функции
@@ -130,15 +132,15 @@ changeCalendar();
 // Заменяет в календаре месяц и день на актуальные
 function changeCalendar() {
     calendarMonth.innerHTML = monthsList[state.todayMonth].rus;
-    calendarYear.innerHTML = state.todayYear;
+    calendarYear.value = state.todayYear;
     printCalendar();
 }
-//exp: analyizYear(2021) will get you all months length,first day,last day with indexes
-function analyizYear(year) {
-    let counter = 0;
+
+// Проверка года
+function checkYearDays(year) {
     const currentYear = {
         year: year,
-        is_leap: false,
+        isLeap: false,
         months: {
             Jan: 0,
             Feb: 1,
@@ -155,63 +157,73 @@ function analyizYear(year) {
         }
     };
 
-    while (counter < 12) {
-        Object.keys(currentYear.months).forEach(month => {
-            currentYear.months[month] = analyizMonth(month, year);
-        });
-        counter++;
+    // Заполняет год информацией о месяцах
+    Object.keys(currentYear.months).forEach(month => {
+        currentYear.months[month] = checkMonthDays(month, year);
+    });
+
+    // Проверяет, високосный ли год (29 дней в Феврале)
+    if (currentYear.months["Feb"].daysLength === 29) {
+        currentYear.isLeap = true;
     }
-    if (currentYear.months["Feb"].days_length === 29) {
-        currentYear.is_leap = true;
-    }
+
     return currentYear;
 }
 
-//exp: run analyizMonth(String:'Dec',Int:2019) note:(must capitalize month like Sep,Nov)
-function analyizMonth(month, year) {
-    const testDays = 31;
-    let counter = 0;
-
+// Проверка месяца
+function checkMonthDays(month, year) {
+    const maxDays = 31;
     const monthObj = {
         year: year,
         month: month,
-        month_idx: monthsIndex[month],
-        first_day: "",
-        first_day_index: null,
-        days_length: 0,
-        last_day_index: null
+        monthIndex: monthsIndexes[month],
+        firstDay: "",
+        firstDayIndex: null,
+        daysLength: 0,
+        lastDayIndex: null
     };
 
-    while (counter < testDays) {
-        counter++;
-        const dateTest = `${counter} ${month} ${year}`;
-        const dateArr = new Date(dateTest).toDateString().split(" ");
-        if (dateArr[1] === month) {
-            if (counter === 1) {
-                monthObj.first_day = dateArr[0];
-                monthObj.first_day_index = daysIndex[dateArr[0]];
+    // Добавление в объект месяца названия и индекса первого и последнего дней
+    for (let i = 1; i < maxDays; ++i) {
+        const dateTest = i + ' ' + month + ' ' + year;
+
+        // Преобразование в массив: день недели/месяц/число/год при помощи разделения пробелами
+        const dateArray = new Date(dateTest).toDateString().split(" ");
+
+        if (dateArray[1] === month) {
+            if (i === 1) {
+                monthObj.firstDay = dateArray[0];
+                monthObj.firstDayIndex = daysIndexes[dateArray[0]];
             }
-            monthObj.days_length++;
-            monthObj.last_day = dateArr[0];
-            monthObj.last_day_index = daysIndex[dateArr[0]];
+
+            monthObj.daysLength++;
+            monthObj.lastDay = dateArray[0];
+            monthObj.lastDayIndex = daysIndexes[dateArray[0]];
         } else {
             return monthObj;
         }
     }
+
     return monthObj;
 }
 
-//get last month days in current month view
+// Получение кол-ва дней предыдущего месяца
 function makePrevMonthArr(firstDayIndex) {
-    let prevMonthIdx;
+    let prevMonthIndex;
     let prevMonthDays;
-    if (state.todayMonth === 0) {
-        prevMonthDays = analyizMonth("Dec", state.todayYear - 1).days_length;
-    } else {
-        prevMonthIdx = monthsIndex[fullMonth.month] - 1;
-        prevMonthDays = fullYear.months[monthsList[prevMonthIdx].var].days_length;
-    }
     let result = [];
+
+    if (state.todayMonth === 0) {
+        // Применение функции определения дней к Декабрю предыдущего года
+        prevMonthDays = checkMonthDays("Dec", state.todayYear - 1).daysLength;
+    } else {
+        // Получение кол-ва дней из предыдущего месяца нынешнего года
+        prevMonthIndex = monthsIndexes[fullMonth.month] - 1;
+        prevMonthDays = fullYear.months[monthsList[prevMonthIndex].var].daysLength;
+    }
+
+    // Заполнение return цифровыми значениями дней относящихся к предыдущему месяцу,
+    // но влезающих в нынешний календарь
     for (let i = 1; i <= firstDayIndex; i++) {
         const day = prevMonthDays - firstDayIndex + i;
         result.push({ day, state: "prevMonth" });
@@ -220,114 +232,146 @@ function makePrevMonthArr(firstDayIndex) {
     return result;
 }
 
-// this will print an array of with days of prev month and next month crosponds to the calendar table
+// Создание массива дней предыдущего и следующего месяцев
 function calcMonthCalendar() {
-    // Create array: [1, 2, 3, ..., 30, 31]
+    const resultArr = [];
+
+    // Новые массивы из кол-ва дней нынешнего месяца со значением
+    // state - нынешний и следующий месяцы
     const currMonth = Array.from(
-        { length: fullMonth.days_length },
+        { length: fullMonth.daysLength },
         (_, i) => ({ day: i + 1, state: "currMonth" })
     );
 
     const nextMonth = Array.from(
-        { length: fullMonth.days_length },
+        { length: fullMonth.daysLength },
         (_, i) => ({ day: i + 1, state: "nextMonth" })
     );
 
-    // Create a flat array with leading zeros and trailing last week:
-    // [0, 0, 0, 0, 1, 2, 3, ..., 30, 31, 1, 2, 3, 4, 5, 6, 7]
-    const flatResultArr = [
-        ...makePrevMonthArr(fullMonth.first_day_index),
+    // Создание массива, состоящего из:
+    // влезающих в нынешний календарь дней предыдущего месяца,
+    // дней нынешнего месяца,
+    // дней следующего месяца (при этом лишние дни обрезаются при помощи slice,
+    // получаются 42 видимых дня)
+    const longDaysArray = [
+        ...makePrevMonthArr(fullMonth.firstDayIndex),
         ...currMonth,
-        ...nextMonth // this includes extra numbers that will be trimmed
-    ].slice(0, 7 * 6); // 7 days/week * 6 weeks
+        ...nextMonth
+    ].slice(0, 7 * 6);
 
-    // Chunk the flat array into slices of 7:
-    const resultArr = [];
+    // Преобразование однородного массива состоящий из 7 небольших
+    // Каждый охватывает одну неделю
     for (let i = 0; i < 7; i++) {
-        resultArr.push(flatResultArr.slice(i * 7, (i + 1) * 7));
+        resultArr.push(longDaysArray.slice(i * 7, (i + 1) * 7));
     }
+
     return resultArr;
 }
 
-// print each cell its day number and color
+// Функция, заполняющая td в календаре
 function printCalendar() {
     const monthArr = calcMonthCalendar();
 
     let currentMonthStarted = false;
     let currentMonthEnd = true;
+
     for (let i = 0; i < 6; i++) {
         let currentWeek = monthArr[i];
-        //
-        const week = document.querySelector("#calendarBody").children[i];
+
+        // Занос в массив всех строк в таблице
+        const week = document.querySelectorAll("#calendarBody tr")[i];
+
+        // Занос в массив всех столбов в строке
+        const weekDays = week.querySelectorAll("td");
+
         for (let j = 0; j < 7; j++) {
-            week.children[j].style.backgroundColor = "white";
-            week.children[j].style.opacity = 1;
-            // console.log(currentWeek[j].day);
+            // Определение первого дня месяца
             if (currentWeek[j].day === 1) {
                 currentMonthStarted = true;
             }
+
+            // Заполнение ячеек числами
+            weekDays[j].innerHTML = currentWeek[j].day;
+
+            // Сегодняшний день, если: нынешний месяц, день, год
             if (
                 currentMonthEnd &&
                 currentMonthStarted &&
                 currentWeek[j].day === todayDate &&
-                fullMonth.month_idx === todayMonth &&
+                fullMonth.monthIndex === todayMonth &&
                 fullYear.year === todayYear
             ) {
-                week.children[j].innerHTML = `${currentWeek[j].day}`;
-                week.children[j].id = "current-day";
-                week.children[j].classList.add("currMonth");
-                week.children[j].style.backgroundColor = "wheat";
+                // Перекрашивание актуальной ячейки
+                weekDays[j].style.backgroundColor = "#ffcdcd";
+
+                // Отмена покраски следующего/предыдущего месяцев
                 currentMonthStarted = false;
                 currentMonthEnd = false;
             } else {
-                week.children[j].style.backgroundColor = "white";
-                // week.children[j].style.color = "black";
-                week.children[j].innerHTML = currentWeek[j].day;
-                week.children[j].removeAttribute("id");
+                // Повторная покраска (чтобы перекрыть актуальный день)
+                weekDays[j].style.backgroundColor = "white";
+
+                // Если дни не относятся к актуальному месяцу, покрасить в бежевый
                 if (currentWeek[j].state !== "currMonth") {
-                    week.children[j].style.backgroundColor = '#f4e1d2';
-                    week.children[j].style.color = "#3b3a30";
-                    week.children[j].classList.remove("currMonth");
-                }
-                if (currentWeek[j].state == "currMonth") {
-                    week.children[j].classList.add("currMonth");
+                    weekDays[j].style.backgroundColor = '#f4e1d2';
                 }
             }
         }
     }
 }
 
+// Переход на следующий месяц
 function nextMonth() {
+    // Прибавляет 1 месяц
     state.todayMonth += 1;
+
+    // Если месяце последний в году, прибавляет год и проверяет кол-во дней в нём
     if (state.todayMonth == 12) {
         state.todayYear += 1;
-        fullYear = analyizYear(state.todayYear);
+
+        // Замена данных о годе
+        fullYear = checkYearDays(state.todayYear);
         state.todayMonth = 0;
     }
+
+    // Замена данных о месяце
     fullMonth = fullYear.months[monthsList[state.todayMonth].var];
+
+    // Вызов функции изменения календаря
     changeCalendar();
 }
 
+// Переход на предыдущий месяц
 function prevMonth() {
+    // Вычитает 1 месяц
     state.todayMonth -= 1;
+
+    // Если месяц первый в году, убавляет год и проверяет кол-во дней в нём
     if (state.todayMonth == 0) {
         state.todayYear -= 1;
-        fullYear = analyizYear(state.todayYear);
+
+        // Замена данных о годе
+        fullYear = checkYearDays(state.todayYear);
         state.todayMonth = 11;
     }
+
+    // Замена данных о месяце
     fullMonth = fullYear.months[monthsList[state.todayMonth].var];
+
+    // Вызов функции изменения календаря
     changeCalendar();
 }
 
-// to change the year manually
+// Изменение года вводом в input
 calendarYear.addEventListener("input", e => {
-    let numberPattern = /\d+/g;
-    let year = parseInt(e.target.innerHTML.match(numberPattern).join(""));
+    // Преобразование введённого в численное значение
+    let year = parseInt(e.target.value);
+
     if (
-        e.target.innerHTML.match(numberPattern).join("").length > 3 &&
         typeof year === "number"
     ) {
-        fullYear = analyizYear(year);
+        // Присваивание всем необходимым переменным нового значения
+        fullYear = checkYearDays(year);
         fullMonth = fullYear.months[monthsList[state.todayMonth].var];
         state.todayYear = year;
         changeCalendar();
