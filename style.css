@@ -37,12 +37,12 @@ button::-moz-focus-inner {
 }
 
 table {
+    overflow: visible;
     padding: 0.5vh 0.5vh;
     background-color: #3b3a30;
     color: white;
     border: 2px solid white;
     border-radius: 20px 20px 0 0;
-    overflow: hidden;
 }
 
 /*---Сегодня---*/
@@ -54,7 +54,6 @@ table {
 #aboutToday {
     border: 2px solid white;
     border-top: none;
-    border-radius: 0 0 20px 20px;
     padding: 5px 10px;
     width: 40%;
     flex-direction: column;
@@ -75,6 +74,42 @@ table {
 
 #aboutToday p {
     text-align: center;
+}
+
+/*---Праздники---*/
+.addRemoveHolidays {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 0 0 20px 20px;
+    padding: 5px 10px;
+    width: 40%;
+    order: 2;
+    background-color: #3b3a30;
+    color: white;
+}
+
+.addRemoveHolidays form {
+    display: flex;
+    flex-direction: column;
+}
+
+.addRemoveHolidays select {
+    margin-bottom: 10px;
+    border-radius: 5px;
+    height: 30px;
+}
+
+.addRemoveHolidays input {
+    margin-bottom: 10px;
+}
+
+.addRemoveHolidays button {
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 5px 10px;
+    height: 30px;
+    background-color: white;
 }
 
 /*---Шапка календаря---*/
@@ -142,7 +177,8 @@ table {
 }
 
 @media only screen and (max-width: 768px) {
-    #calendar {
+    #calendar,
+    .addRemoveHolidays {
         width: 80%;
     }
 

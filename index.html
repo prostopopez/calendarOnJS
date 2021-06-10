@@ -118,6 +118,36 @@
         </tbody>
     </table>
 </div>
+<div class="addRemoveHolidays">
+    <form id="holidayRemove form">
+        <select id="selectNumber">
+            <option>Выбор праздника</option>
+        </select>
+        <button id="removeHoliday">Удалить</button>
+    </form>
+    <form id="holidayAdd form">
+        <label for="name">Название: <input type="text" id="name" /></label>
+        <select id="month">
+            <option>Выбор месяца</option>
+            <option value="Jan">Январь</option>
+            <option value="Feb">Февраль</option>
+            <option value="Mar">Март</option>
+            <option value="Apr">Апрель</option>
+            <option value="May">Май</option>
+            <option value="Jun">Июнь</option>
+            <option value="Jul">Июль</option>
+            <option value="Aug">Август</option>
+            <option value="Sep">Сентябрь</option>
+            <option value="Oct">Октябрь</option>
+            <option value="Nov">Ноябрь</option>
+            <option value="Dec">Декабрь</option>
+        </select>
+        <select id="day">
+            <option>Выбор дня</option>
+        </select>
+        <button id="addHoliday">Добавить</button>
+    </form>
+</div>
 <!-- Скрипт -->
 <script type="text/javascript" src="calendar.js"></script>
 </body>

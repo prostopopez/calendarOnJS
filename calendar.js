@@ -6,6 +6,9 @@ const currentYear = document.querySelector("#yearCur");
 const calendarMonth = document.querySelector("#monthActual");
 const calendarYear = document.querySelector("#yearActual");
 const holidays = document.querySelector(".holidays p");
+let select = document.getElementById("selectNumber");
+const removeHoliday = document.getElementById("removeHoliday");
+const addHoliday = document.getElementById("addHoliday");
 
 // Кнопки - следующий, предыдущий месяц
 document.querySelector("#nextMonthClick").addEventListener("click", prevMonth);
@@ -117,6 +120,7 @@ const monthsIndexes = {
     Dec: 11
 };
 
+// Массив праздников
 let holidaysList = [
     {
         name: 'Международный день защиты детей',
@@ -145,6 +149,78 @@ let holidaysList = [
     }
 ];
 
+// Сохранение информации о праздниках после перезагрузки страницы
+if (localStorage.getItem('holidaysLocal') == null) {
+    holidaysList = [];
+} else {
+    holidaysList = JSON.parse(localStorage.getItem('holidaysLocal'));
+}
+
+// Выпадающий лист с праздниками
+for (let i = 0; i < holidaysList.length; i++) {
+    let opt = holidaysList[i].name;
+    let el = document.createElement("option");
+    el.textContent = opt;
+    el.value = opt;
+    select.appendChild(el);
+}
+
+// Кол-во дней в зависимости от месяца в select
+document.getElementById('month').onchange = function () {
+    for (let i = 0; i < document.getElementById('day').children.length; i++) {
+        document.getElementById('day').innerHTML = '';
+    }
+
+    for (let i = 0; i <= (fullYear.months[document.getElementById('month').value]).daysLength; i++) {
+        let el = document.createElement("option");
+        el.textContent = (i + 1).toString();
+        el.value = (i + 1).toString();
+        document.getElementById('day').appendChild(el);
+    }
+};
+
+// Удалить праздник
+removeHoliday.onclick = function () {
+    for (let i = 0; i < holidaysList.length; i++) {
+        if (holidaysList[i].name === select.value) {
+            holidaysList.splice(i, 1);
+        }
+    }
+
+    localStorage.setItem('holidaysLocal', JSON.stringify(holidaysList));
+    document.location.reload();
+};
+console.log(holidaysList);
+
+// Добавить праздник
+addHoliday.onclick = function () {
+    let isHol = true;
+
+    let name = document.getElementById('name').value;
+    let month = document.getElementById('month').value;
+    let day = document.getElementById('day').value;
+
+    for (let i = 0; i < holidaysList.length; i++) {
+        if (name === holidaysList[i].name) {
+            isHol = false;
+        }
+    }
+
+    console.log(month, day);
+    if (month !== 'Выбор месяца' && day !== 'Выбор дня') {
+        if (isHol) {
+            holidaysList.push({ name: name, month: month, dayIndex: day });
+
+            localStorage.setItem('holidaysLocal', JSON.stringify(holidaysList));
+            document.location.reload();
+        } else {
+            alert('Такой праздник уже есть');
+        }
+    } else {
+        alert('Выберите корректные месяц и день');
+    }
+};
+
 // Замена данных о сегодняшнем дне
 currentYear.innerHTML = todayYear;
 currentDay.innerHTML = daysList[todayDay] + ',';
@@ -158,7 +234,7 @@ for (let y = 0; y < holidaysList.length; y++) {
     }
 }
 
-// Замена данных о сегодняшнем дне
+// Получение подробностей по году и месяцу
 let fullYear = checkYearDays(state.todayYear);
 let fullMonth = fullYear.months[monthsList[state.todayMonth].var];
 
