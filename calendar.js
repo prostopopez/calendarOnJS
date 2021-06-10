@@ -190,7 +190,6 @@ removeHoliday.onclick = function () {
     localStorage.setItem('holidaysLocal', JSON.stringify(holidaysList));
     document.location.reload();
 };
-console.log(holidaysList);
 
 // Добавить праздник
 addHoliday.onclick = function () {
@@ -206,7 +205,6 @@ addHoliday.onclick = function () {
         }
     }
 
-    console.log(month, day);
     if (month !== 'Выбор месяца' && day !== 'Выбор дня') {
         if (isHol) {
             holidaysList.push({ name: name, month: month, dayIndex: day });
